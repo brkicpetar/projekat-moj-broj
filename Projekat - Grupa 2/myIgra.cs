@@ -310,6 +310,14 @@ namespace Projekat___Grupa_2
                 while (stack.Count > 1) stack.Pop();
                 Console.WriteLine(stack.Pop() + " = " + priblizanBroj);
             }
+            if (!File.Exists("istorija.raz")) File.Create("istorija.raz").Close();
+            if (string.IsNullOrEmpty(File.ReadAllText("istorija.raz"))) File.WriteAllText("istorija.raz", DateTime.Now.ToString("dddd, dd.MM.yyyy, HH:mm:ss") + " - " + brojBodova + "pts\n");
+            else File.AppendAllText("istorija.raz", DateTime.Now.ToString("dddd, dd.MM.yyyy, HH:mm:ss") + " - " + brojBodova + "pts\n");
+
+            t.Abort();
+            Console.WriteLine("\nPritisnite dugme ENTER kako biste se vratili na glavni meni.");
+            while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
+            return;
         }
     }
 }

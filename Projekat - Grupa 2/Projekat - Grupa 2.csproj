@@ -43,7 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="myIstorija.cs" />
     <Compile Include="myMenu.cs" />
+    <Compile Include="myPravila.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="myIgra.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,17 +6,13 @@ using System.Threading.Tasks;
 
 namespace Projekat___Grupa_2
 {
-    internal class Program
+    internal class myIstorija
     {
-        static void Main(string[] args)
+        public void PokreniIstoriju()
         {
-            Console.OutputEncoding = Encoding.Unicode;
-            Console.InputEncoding = Encoding.Unicode;
-            Console.CursorVisible = false;
-            Console.WriteLine();
-
-
-            myMenu meni = new myMenu(new string[] { "Pokreni igru", "Pravila", "Istorija igara", "Napusti igru" }, @"
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(@"
           .         .                                                                                                                          
          ,8.       ,8.           ,o888888o.                8 8888           8 888888888o   8 888888888o.      ,o888888o.                8 8888 
         ,888.     ,888.       . 8888     `88.              8 8888           8 8888    `88. 8 8888    `88.  . 8888     `88.              8 8888 
@@ -31,30 +27,19 @@ namespace Projekat___Grupa_2
 
 
 
-                                           Dobrodošli u igru Moj Broj! Odaberite opciju iz menija!
+                                                           Istorija igara Moj Broj:
+
+
 ");
-            int index = meni.Start();
-            while (index != 3)
+            Console.ResetColor();
+            int brojac = 0;
+            foreach (var item in System.IO.File.ReadAllLines("istorija.raz"))
             {
-                if (index == 0)
-                {
-                    Console.Clear();
-                    myIgra igra = new myIgra();
-                    igra.PokreniIgru();
-                }
-                else if (index == 1)
-                {
-                    myPravila pravila = new myPravila();
-                    pravila.PokreniPravila();
-                }
-                else if (index == 2)
-                {
-                    myIstorija istorija = new myIstorija();
-                    istorija.PokreniIstoriju();
-                }
-                else if (index == 3) Environment.Exit(0);
-                index = meni.Start();
+                Console.WriteLine((brojac + 1) + ". " + item);
+                brojac++;
             }
+            Console.WriteLine("\nPritisnite dugme ENTER kako biste se vratili na glavni meni.");
+            while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
         }
     }
 }

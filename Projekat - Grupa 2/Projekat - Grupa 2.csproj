@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="myMenu.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="myIgra.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

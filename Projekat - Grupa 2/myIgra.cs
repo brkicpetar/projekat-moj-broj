@@ -61,6 +61,14 @@ namespace Projekat___Grupa_2
             }
             return list;
         }
+        /*
+         * IDEJA ZA ALGORITAM
+         * Program vrsi bruteforce sa svim kombinacijama brojeva i znakova, do momenta kada shvati da ne dolazi do tacnog broja (iskorisceni svi brojevi)
+         * Tada se vraca po jedan korak u nazad i menja kombinacije znakova i brojeva kako bi se zadovoljio cilj
+         * Ukoliko algoritam ne moze da pronadje tacan broj, vraca vrednost false
+         * U tom slucaju na tacan broj se dodaje ili oduzima (naizmenicno) vrednost od 1 do tacnog broja
+         * Algoritam se potom ponovo poziva sve dok se ne pronadje najblizi moguci broj tacnom resenju
+         */
         static bool RezultatMedjukorak(List<Izraz> list, int tacanBroj, ref Stack<string> stack)
         {
             if (list.Count == 1) return Math.Abs(list[0].rezultat - tacanBroj) == 0;
@@ -84,7 +92,7 @@ namespace Projekat___Grupa_2
                             stack.Push(item.izrazString);
                             return true;
                         }
-                        preostaliBrojeviPlusRezultat.RemoveAt(preostaliBrojeviPlusRezultat.Count - 1);
+                        preostaliBrojeviPlusRezultat.RemoveAt(preostaliBrojeviPlusRezultat.Count - 1); //backtrack momenat
                     }
                 }
             }
@@ -156,6 +164,14 @@ namespace Projekat___Grupa_2
             int kcifra1 = -1;
             int kcifra2 = -1;
             int kcifra3 = -1;
+
+            /*
+             * IDEJA ZA ALGORITAM
+             * Kada se pritisne dugme ENTER, generise se nasumicna cifra od 0 do 9 za biranje konacnog broja
+             * Pritiskom na dugme ENTER se potom generisu cetiri cifre od 1 do 9 kao deo skupa ponudjenih brojeva
+             * Potom se biraju cifre od 0 do 2 koje odgovaraju indexima ponudjenih brojeva 10, 15 i 20 (tim redosledom)
+             * Napokon se biraju cifre od 0 do 3 koje odgovaraju indexima ponudjenih brojeva 25, 50, 75, 100 (tim redosledom)
+             */
 
             ConsoleKeyInfo key = Console.ReadKey(true);
             while(key.Key != ConsoleKey.Enter) key = Console.ReadKey(true);
@@ -236,6 +252,22 @@ namespace Projekat___Grupa_2
 
             bool decimalno = false;
 
+            /*
+             * IDEJA ZA ALGORITAM
+             * Pomocu funkcije DataTable.Compute(string expression, string filter) resavamo korisnikov uneti izrad
+             * Ukoliko dodje do greske vezane za zagrade, javljamo poruku da zagrade nisu dobro uparene
+             * Proverava se da li se koriste operatori iskljucivo iz skupa znaci
+             * Nelegalne kombinacije operatora se nalaze u nizu kombi, prvo se proverava da li postoji bilo koja vrednost iz niza kombi u izrazu
+             * Bodovanje: tacan broj ili razlika manja ili jednaka pribliznom broju koji je dobio racunar: 30 bodova
+             *            razlika +-2 od tacnog broja ili razliek pribliznog broja koji je dobio racunar i tacnog broja: 20 bodova
+             *            razlika +-5 od tacnog broja ili razliek pribliznog broja koji je dobio racunar i tacnog broja: 10 bodova
+             *            sve ostalo: 0 bodova
+             *            
+             * Dok korisnik unosi izraz tokom 60 sekundi, u pozadini se putem sistema niti izvrsava resavanje broja
+             * Nit se prekida kada se dodje do tacnog broja
+             * Korisnik moze ranije da otkuca svoje resenje, tada se proverava da li je racunar sklopio svoj izraz, ako ne, ispisuje se poruka s molbom za cekanje
+             */
+
             if (!string.IsNullOrEmpty(postupak))
             {
                 try
@@ -310,6 +342,7 @@ namespace Projekat___Grupa_2
                 while (stack.Count > 1) stack.Pop();
                 Console.WriteLine(stack.Pop() + " = " + priblizanBroj);
             }
+            //upisivanje bodova u fajl gde se cuva istorija igara
             if (!File.Exists("istorija.raz")) File.Create("istorija.raz").Close();
             if (string.IsNullOrEmpty(File.ReadAllText("istorija.raz"))) File.WriteAllText("istorija.raz", DateTime.Now.ToString("dddd, dd.MM.yyyy, HH:mm:ss") + " - " + brojBodova + "pts\n");
             else File.AppendAllText("istorija.raz", DateTime.Now.ToString("dddd, dd.MM.yyyy, HH:mm:ss") + " - " + brojBodova + "pts\n");

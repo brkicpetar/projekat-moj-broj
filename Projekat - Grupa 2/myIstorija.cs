@@ -33,10 +33,18 @@ namespace Projekat___Grupa_2
 ");
             Console.ResetColor();
             int brojac = 0;
-            foreach (var item in System.IO.File.ReadAllLines("istorija.raz"))
+            //ispisivanje istorije podataka
+            if(string.IsNullOrEmpty(System.IO.File.ReadAllText("istorija.raz")))
             {
-                Console.WriteLine((brojac + 1) + ". " + item);
-                brojac++;
+                Console.WriteLine("Istorija je prazna.");
+            }
+            else
+            {
+                foreach (var item in System.IO.File.ReadAllLines("istorija.raz"))
+                {
+                    Console.WriteLine((brojac + 1) + ". " + item);
+                    brojac++;
+                }
             }
             Console.WriteLine("\nPritisnite dugme ENTER kako biste se vratili na glavni meni.");
             while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }

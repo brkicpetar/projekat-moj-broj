@@ -13,7 +13,24 @@ namespace Projekat___Grupa_2
             public int rezultat;
             public string izrazString;
         }
-        
+
+        private List<Izraz> ponudjeniBrojevi;
+        private int konacniBroj;
+        private Stack<string> stack;
+        private int priblizanBroj = 9999999;
+        private int brojBodova = 0;
+
+        string ReadLine()
+        {
+            ReadLineDelegate a = Console.ReadLine;
+            var result = a.BeginInvoke(null, null);
+            result.AsyncWaitHandle.WaitOne(60000);
+            Console.CursorVisible = false;
+            if (result.IsCompleted) return a.EndInvoke(result);
+            else return null;
+        }
+        delegate string ReadLineDelegate();
+
         public void PokreniIgru()
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -107,6 +124,72 @@ namespace Projekat___Grupa_2
             }
             
             stack = new Stack<string>();
+
+            Console.Write("\nVaš postupak za rešavanje: ");
+
+            Console.CursorVisible = true;
+            string postupak = ReadLine();
+            string[] kombi = { "+-", "-+", "+/", "/+", "+*", "*+", "-*", "*-", "-/", "/-", "*/", "*/" };
+            char[] znaci = { '(', ')', '+', '-', '*', '/' };
+
+            bool decimalno = false;
+
+            if (!string.IsNullOrEmpty(postupak))
+            {
+                try
+                {
+                    string[] temp = postupak.Split(znaci);
+                    if (!kombi.Any(n => postupak.Contains(n)))
+                    {
+                        foreach (var item in temp)
+                        {
+                            if (item != "" && !l.Contains(Convert.ToInt32(item.Trim())))
+                            {
+                                Console.WriteLine("Broj {0} nije u ponudi ili je već iskorišćen!", item);
+                                break;
+                            }
+                            if (item != "") l.Remove(Convert.ToInt32(item.Trim()));
+                        }
+                        var resenje = new System.Data.DataTable().Compute(postupak, null);
+                        double r = Convert.ToDouble(resenje);
+                        if (r != (int)r)
+                        {
+                            decimalno = true;
+                            Console.WriteLine("Rešenje je decimalno!");
+                        }
+                        if (r == konacniBroj || (Math.Abs(r - konacniBroj) <= Math.Abs(konacniBroj - priblizanBroj) && priblizanBroj != 9999999) && !decimalno)
+                        {
+                            Console.WriteLine("Osvojili ste 30 poena!");
+                            brojBodova = 30;
+                        }
+                        else if ((Math.Abs(Math.Abs(r - konacniBroj) - Math.Abs(konacniBroj - priblizanBroj)) < 2 && priblizanBroj != 9999999) || Math.Abs(r - konacniBroj) < 2 && !decimalno)
+                        {
+                            Console.WriteLine("Osvojili ste 20 poena");
+                            brojBodova = 20;
+                        }
+                        else if ((Math.Abs(Math.Abs(r - konacniBroj) - Math.Abs(konacniBroj - priblizanBroj)) < 5 && priblizanBroj != 9999999) || Math.Abs(r - konacniBroj) < 5 && !decimalno)
+                        {
+                            Console.WriteLine("Osvojili ste 10 poena");
+                            brojBodova = 10;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Osvojili ste 0 poena.");
+                            brojBodova = 0;
+                        }
+                    }
+                    else Console.WriteLine("Operatori nisu dobro upareni!");
+                }
+                catch (System.Data.SyntaxErrorException ex)
+                {
+                    if (ex.Message.Contains("The expression is missing the closing parenthesis") || ex.Message.Contains("The expression has too many closing parentheses"))
+                    {
+                        Console.WriteLine("Zagrade nisu dobro uparene!");
+                    }
+                    else Console.WriteLine("Pogrešno unet izraz!");
+                }
+            }
+            else Console.WriteLine("\nNišta nije uneto. Osvojili ste 0 poena.");
         }
     }
 }

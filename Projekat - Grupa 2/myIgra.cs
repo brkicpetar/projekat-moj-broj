@@ -17,8 +17,107 @@ namespace Projekat___Grupa_2
         private List<Izraz> ponudjeniBrojevi;
         private int konacniBroj;
         private Stack<string> stack;
+        private bool daLiJeKompjuterDosaoDoResenja;
+        private bool daLiJeTacanBroj = false;
         private int priblizanBroj = 9999999;
         private int brojBodova = 0;
+
+        static List<Izraz> moguciRezultati(int broj1, int broj2, string izraz1, string izraz2)
+        {
+            List<Izraz> list = new List<Izraz>();
+            Izraz i = new Izraz();
+            i.rezultat = broj1 + broj2;
+            i.izrazString = "(" + izraz1 + "+" + izraz2 + ")";
+            list.Add(i);
+            if (broj1 != 1 && broj2 != 1)
+            {
+                i.rezultat = broj1 * broj2;
+                i.izrazString = "(" + izraz1 + "*" + izraz2 + ")";
+                list.Add(i);
+            }
+            if (broj1 >= broj2 && broj1 - broj2 != broj2)
+            {
+                i.rezultat = broj1 - broj2;
+                i.izrazString = "(" + izraz1 + "-" + izraz2 + ")";
+                list.Add(i);
+            }
+            if (broj2 > broj1 && broj2 - broj1 != broj1)
+            {
+                i.rezultat = broj2 - broj1;
+                i.izrazString = "(" + izraz2 + "-" + izraz1 + ")";
+                list.Add(i);
+            }
+            if (broj2 != 0 && broj1 % broj2 == 0 && broj1 / broj2 != broj2 && broj2 != 1)
+            {
+                i.rezultat = broj1 / broj2;
+                i.izrazString = "(" + izraz1 + "/" + izraz2 + ")";
+                list.Add(i);
+            }
+            if (broj1 != 0 && broj2 % broj1 == 0 && broj2 / broj1 != broj1 && broj1 != 1)
+            {
+                i.rezultat = broj2 / broj1;
+                i.izrazString = "(" + izraz2 + "/" + broj1 + ")";
+                list.Add(i);
+            }
+            return list;
+        }
+        static bool RezultatMedjukorak(List<Izraz> list, int tacanBroj, ref Stack<string> stack)
+        {
+            if (list.Count == 1) return Math.Abs(list[0].rezultat - tacanBroj) == 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                for (int j = i + 1; j < list.Count; j++)
+                {
+                    List<Izraz> preostaliBrojeviPlusRezultat = new List<Izraz>();
+                    for (int k = 0; k < list.Count; k++)
+                    {
+                        if (k != i && k != j) preostaliBrojeviPlusRezultat.Add(list[k]);
+                    }
+                    foreach (var item in moguciRezultati(list[i].rezultat, list[j].rezultat, list[i].izrazString, list[j].izrazString))
+                    {
+                        Izraz iz = new Izraz();
+                        iz.rezultat = item.rezultat;
+                        iz.izrazString = item.izrazString;
+                        preostaliBrojeviPlusRezultat.Add(iz);
+                        if (RezultatMedjukorak(preostaliBrojeviPlusRezultat, tacanBroj, ref stack))
+                        {
+                            stack.Push(item.izrazString);
+                            return true;
+                        }
+                        preostaliBrojeviPlusRezultat.RemoveAt(preostaliBrojeviPlusRezultat.Count - 1);
+                    }
+                }
+            }
+            return false;
+        }
+
+        void RacunarResava()
+        {
+            daLiJeKompjuterDosaoDoResenja = RezultatMedjukorak(ponudjeniBrojevi, konacniBroj, ref stack);
+            if (!daLiJeKompjuterDosaoDoResenja)
+            {
+                for (int i = 1; i <= konacniBroj; i++)
+                {
+                    daLiJeKompjuterDosaoDoResenja = RezultatMedjukorak(ponudjeniBrojevi, konacniBroj + i, ref stack);
+                    if (daLiJeKompjuterDosaoDoResenja)
+                    {
+                        priblizanBroj = konacniBroj + i;
+                        break;
+                    }
+                    else
+                    {
+                        daLiJeKompjuterDosaoDoResenja = RezultatMedjukorak(ponudjeniBrojevi, konacniBroj - i, ref stack);
+                        if (daLiJeKompjuterDosaoDoResenja)
+                        {
+                            priblizanBroj = konacniBroj - i;
+                            break;
+                        }
+                    }
+                }
+            }
+            else daLiJeTacanBroj = true;
+            Thread.CurrentThread.Abort();
+        }
 
         string ReadLine()
         {
@@ -125,6 +224,9 @@ namespace Projekat___Grupa_2
             
             stack = new Stack<string>();
 
+            Thread t = new Thread(new ThreadStart(RacunarResava));
+            t.Start();
+
             Console.Write("\nVaš postupak za rešavanje: ");
 
             Console.CursorVisible = true;
@@ -190,6 +292,24 @@ namespace Projekat___Grupa_2
                 }
             }
             else Console.WriteLine("\nNišta nije uneto. Osvojili ste 0 poena.");
+            if (t.ThreadState == ThreadState.Running) Console.WriteLine("Kompjuter još uvek računa, sačekajte...");
+            while (t.ThreadState == ThreadState.Running)
+            {
+
+            }
+
+            if (daLiJeTacanBroj)
+            {
+                Console.WriteLine("Kompjuter je došao do tačnog broja!");
+                while (stack.Count > 1) stack.Pop();
+                Console.WriteLine(stack.Pop() + " = " + konacniBroj);
+            }
+            else
+            {
+                Console.WriteLine("Kompjuter nije mogao da dođe do tačnog broja, već približnog rešenja {0}", priblizanBroj);
+                while (stack.Count > 1) stack.Pop();
+                Console.WriteLine(stack.Pop() + " = " + priblizanBroj);
+            }
         }
     }
 }
